@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI pe înțelesul tuturor</title>
+<meta name="description" content="Prezentare interactivă despre inteligența artificială, pentru începători.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Albert+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one calm centered column (~660px) for reading; interactive "labs" widen to ~900px on soft white panels. Serif headings, quiet sans body, steel-blue accent with a muted gold counterpart. */
+:root{
+  --bg:#F6F7F8;
+  --surface:#FFFFFF;
+  --ink:#25282D;
+  --muted:#6C727B;
+  --line:#E5E8EC;
+  --accent:#4A6B8A;
+  --accent-soft:#EAF0F5;
+  --warm:#B98A4E;
+  --warm-soft:#F5EDE2;
+  --good:#4E8B6E;
+  --bad:#B4605A;
+  --shadow:0 1px 2px rgba(30,40,55,.04), 0 8px 28px rgba(30,40,55,.06);
+  --f-display:"Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-body:"Albert Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --surface:#1B1E23; --ink:#E3E5E8; --muted:#959CA6; --line:#2A2E35;
+    --accent:#9BB6D1; --accent-soft:#223040; --warm:#D6AF78; --warm-soft:#33291D;
+    --good:#82C0A1; --bad:#E0908A; --shadow:0 1px 2px rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --surface:#1B1E23; --ink:#E3E5E8; --muted:#959CA6; --line:#2A2E35;
+  --accent:#9BB6D1; --accent-soft:#223040; --warm:#D6AF78; --warm-soft:#33291D;
+  --good:#82C0A1; --bad:#E0908A; --shadow:0 1px 2px rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,5.4vw,3.5rem);letter-spacing:-.01em}
+h2{font-size:clamp(1.7rem,3.6vw,2.3rem);letter-spacing:-.005em}
+h3{font-size:1.3rem;font-weight:500}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:3px}
+em{font-style:italic}
+b,strong{font-weight:600}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hl{background:linear-gradient(transparent 62%,var(--warm-soft) 62%);padding:0 .1em}
+
+.progress{position:fixed;top:0;left:0;right:0;height:calc(2px + env(safe-area-inset-top,0px));z-index:20;pointer-events:none}
+.progress span{display:block;height:100%;width:0;background:var(--accent);opacity:.7}
+
+main{display:grid}
+.col{max-width:660px;margin:0 auto;width:100%}
+.wide{max-width:920px;margin:0 auto;width:100%}
+section.ch{padding-block:88px;display:grid;gap:32px}
+.head{text-align:center;display:grid;gap:14px;justify-items:center}
+.num{font-family:var(--f-display);font-style:italic;font-size:1.05rem;color:var(--accent)}
+.lede{font-size:1.12rem;color:var(--muted);max-width:56ch;text-align:center;margin:0 auto}
+.prose{display:grid;gap:14px;text-align:center}
+.prose p{color:var(--ink)}
+.prose h3{margin-top:8px}
+.sep{width:48px;height:1px;background:var(--line);margin:0 auto}
+
+/* hero */
+.hero{padding-block:96px 64px;display:grid;gap:26px;text-align:center;justify-items:center}
+.hero h1 i{color:var(--accent)}
+
+/* panels / labs */
+.lab{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:28px;display:grid;gap:18px;min-width:0}
+.lab-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lab-title{font-family:var(--f-display);font-size:1.2rem;font-weight:500}
+.note{font-size:.9rem;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;cursor:pointer;font-size:.92rem;transition:border-color .2s, background .2s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.ctl{display:grid;gap:4px;font-size:.92rem}
+.ctl .row{display:flex;justify-content:space-between;gap:8px}
+.ctl .v{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:8px 24px;font-family:var(--f-mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:500}
+svg{display:block;max-width:100%;height:auto}
+.two{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:760px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.two > *{min-width:0}
+
+/* next word */
+.sentence{font-family:var(--f-display);font-size:clamp(1.3rem,3vw,1.7rem);line-height:1.4;text-align:left;min-height:2.8em}
+.sentence .added{color:var(--accent);border-bottom:1.5px solid var(--accent)}
+.caret{display:inline-block;width:2px;height:1.05em;vertical-align:-.15em;background:var(--accent);margin-left:3px;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.choices{display:grid;gap:8px}
+.choice{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:transparent;border-radius:12px;padding:10px 14px;cursor:pointer;transition:border-color .2s}
+.choice:hover{border-color:var(--accent)}
+.choice .bar{position:absolute;inset:0 auto 0 0;background:var(--accent-soft);transition:width .5s ease}
+.choice > span:not(.bar){position:relative}
+.choice .p{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+
+/* search grid */
+.grid{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:2px;touch-action:manipulation}
+.cell{aspect-ratio:1;border-radius:3px;background:var(--line);cursor:pointer;transition:background .25s}
+.cell.wall{background:var(--ink);opacity:.75}
+.cell.seen{background:var(--accent-soft)}
+.cell.front{background:var(--accent);opacity:.45}
+.cell.path{background:var(--warm)}
+.cell.start,.cell.goal{background:var(--accent)}
+.cell.goal{background:var(--good)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* table */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:520px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:.8rem;font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+td:first-child{color:var(--muted);width:24%}
+
+/* split bar */
+.splitbar{display:flex;height:46px;border-radius:12px;overflow:hidden;font-size:.85rem;font-weight:500}
+.splitbar div{display:grid;place-items:center;color:var(--ink)}
+.sb-train{flex:70;background:var(--accent-soft)}
+.sb-val{flex:15;background:var(--warm-soft)}
+.sb-test{flex:15;background:var(--line)}
+.splitkey{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.splitkey div{display:grid;gap:4px;text-align:center;justify-items:center}
+.splitkey b{font-family:var(--f-display);font-size:1.1rem;font-weight:500}
+.splitkey span{font-size:.92rem;color:var(--muted)}
+.splitkey .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+
+/* neuron */
+.edge{transition:stroke-opacity .3s, stroke-width .3s}
+.pulse{stroke-dasharray:3 17;animation:flow 1.3s linear infinite;pointer-events:none}
+@keyframes flow{to{stroke-dashoffset:-40}}
+.hit{stroke:transparent;stroke-width:14;cursor:pointer}
+.node{cursor:pointer}
+.info{font-size:.93rem;background:var(--bg);border-radius:12px;padding:14px 16px;min-height:4.4em}
+.info .f{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);display:block;margin-top:4px;overflow-wrap:anywhere}
+.mapping{display:grid;gap:0;font-size:.93rem}
+.mapping div{display:grid;grid-template-columns:1fr 18px 1fr;gap:10px;padding-block:9px;border-bottom:1px solid var(--line);align-items:center}
+.mapping div > span:first-child{text-align:right}
+.mapping div:last-child{border-bottom:0}
+.mapping .arr{color:var(--muted);text-align:center}
+.mapping .r{color:var(--accent)}
+
+/* vision */
+.cv{width:100%;max-width:300px;aspect-ratio:1;border-radius:14px;display:block;margin:0 auto;background:#000;cursor:crosshair}
+.pix{font-family:var(--f-mono);font-size:.75rem;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;max-width:260px;margin:0 auto;font-variant-numeric:tabular-nums}
+.pix span{aspect-ratio:1.4;display:grid;place-items:center;border-radius:3px}
+.steps4{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:560px){.steps4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:900px){.steps4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.steps4 > div{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:22px 18px;display:grid;gap:8px;align-content:start;justify-items:center;text-align:center}
+.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;text-align:center}
+.layers div{display:grid;gap:4px;justify-items:center;padding:14px 10px;border-radius:14px;background:var(--bg)}
+.layers div.on{background:var(--accent-soft);outline:1.5px solid var(--accent)}
+.layers b{font-family:var(--f-display);font-weight:500;font-size:1.05rem}
+.layers span{font-size:.86rem;color:var(--muted)}
+.conv{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;font-family:var(--f-mono);font-size:.78rem}
+.m3{display:grid;grid-template-columns:repeat(3,38px);gap:2px}
+.m3 span{height:30px;display:grid;place-items:center;border-radius:4px;font-variant-numeric:tabular-nums}
+.m3.k span{background:var(--accent-soft);color:var(--ink)}
+.conv .op{font-size:1.1rem;color:var(--muted)}
+.conv .res{font-family:var(--f-display);font-size:1.4rem;color:var(--accent)}
+.conv-cap{display:grid;grid-template-columns:repeat(3,auto);justify-content:center;gap:10px 36px;text-align:center}
+/* misinformation */
+.fake{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+@media (min-width:760px){.fake{grid-template-columns:300px minmax(0,1fr)}}
+.vwrap{position:relative;width:100%;max-width:300px;margin:0 auto;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#111}
+.vwrap video{width:100%;height:100%;object-fit:cover;display:block}
+.stamp{position:absolute;top:12px;right:12px;background:var(--bad);color:#fff;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;padding:4px 10px;border-radius:999px;pointer-events:none}
+.tells{display:grid;gap:8px}
+.tell{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;text-align:left;border:1px solid var(--line);background:transparent;border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .2s, background .2s}
+.tell:hover{border-color:var(--accent)}
+.tell[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.tell .ts{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);padding-top:2px}
+.tell b{display:block;font-weight:600}
+.tell span.d{font-size:.9rem;color:var(--muted)}
+.sift{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;text-align:center}
+.sift div{display:grid;gap:6px;justify-items:center;align-content:start}
+.sift .n{font-family:var(--f-display);font-style:italic;color:var(--accent);font-size:1.05rem}
+.sift span{font-size:.92rem;color:var(--muted)}
+.check{display:grid;gap:8px}
+.check label{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;align-items:start;padding:10px 12px;border-radius:12px;cursor:pointer}
+.check label:hover{background:var(--bg)}
+.check input{width:18px;height:18px;margin-top:3px;accent-color:var(--accent)}
+.meter{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--good);transition:width .4s}
+.steps4 .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);font-family:var(--f-display);font-style:italic;color:var(--accent);font-size:1.05rem}
+.steps4 b{font-weight:600}
+.steps4 span:not(.n){font-size:.92rem;color:var(--muted)}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:20px;display:grid;gap:6px;align-content:start;justify-items:center;text-align:center}
+.card .label{color:var(--accent)}
+.card h3{font-size:1.15rem}
+.card p{font-size:.93rem;color:var(--muted)}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.fact{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:4px;text-align:center;justify-items:center}
+.fact .big{font-family:var(--f-display);font-size:1.9rem;line-height:1.1;color:var(--accent)}
+.fact span{font-size:.9rem;color:var(--muted)}
+
+.callout{border-top:1px solid var(--warm);padding:16px 8px 0;font-size:.98rem;text-align:center}
+.callout .label{color:var(--warm);display:block;margin-bottom:4px}
+
+/* tokens & attention */
+.tokin{width:100%;font:inherit;font-size:1rem;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;min-height:72px}
+.tokout{display:flex;flex-wrap:wrap;gap:4px;font-family:var(--f-mono);font-size:.88rem;line-height:1.2}
+.tok{padding:5px 6px;border-radius:6px;white-space:pre;color:var(--ink)}
+.t0{background:var(--accent-soft)}.t1{background:var(--warm-soft)}.t2{background:var(--line)}
+.att{display:flex;flex-wrap:wrap;gap:6px;font-size:1.15rem;font-family:var(--f-display)}
+.att span{padding:4px 8px;border-radius:8px;position:relative}
+.att .q{outline:1.5px solid var(--warm);background:var(--warm-soft)}
+.tempout{font-family:var(--f-display);font-size:1.2rem;line-height:1.5;min-height:4.6em;padding:16px 20px;background:var(--bg);border-radius:12px}
+
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.stage{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:22px;display:grid;gap:8px;align-content:start;text-align:center;justify-items:center}
+.stage p{font-size:.93rem;color:var(--muted)}
+.stage .like{border-top:1px solid var(--line);padding-top:10px;font-style:italic;font-family:var(--f-display);font-size:1rem;color:var(--ink)}
+.vs ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;color:var(--muted);font-size:.95rem}
+.panel{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:22px;display:grid;gap:10px;align-content:start;text-align:center;justify-items:center}
+.panel.on{outline:1.5px solid var(--accent)}
+
+/* myths */
+.myths{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.myth{background:var(--surface);border:0;box-shadow:var(--shadow);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start;text-align:left;cursor:pointer;width:100%}
+.myth .c{font-family:var(--f-display);font-size:1.12rem;line-height:1.3}
+.myth .h{font-size:.82rem;color:var(--muted)}
+.myth .a{display:grid;gap:4px}
+.myth .verd{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+.verd.t{color:var(--good)}.verd.f{color:var(--bad)}.verd.m{color:var(--warm)}
+.myth .a p{font-size:.92rem;color:var(--muted)}
+
+.gloss{margin:0;display:grid}
+.gloss div{display:grid;grid-template-columns:1fr;gap:2px;padding-block:12px;border-bottom:1px solid var(--line)}
+@media (min-width:600px){.gloss div{grid-template-columns:190px minmax(0,1fr);gap:18px}}
+.gloss dt{font-family:var(--f-display);font-size:1.05rem;font-weight:500}
+.gloss dd{margin:0;color:var(--muted);font-size:.95rem}
+
+footer{padding-block:80px 96px;text-align:center;display:grid;gap:16px;justify-items:center}
+.final{font-family:var(--f-display);font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.3;max-width:28ch}
+.sources{font-size:.85rem;color:var(--muted);display:grid;gap:4px}
+
+.reveal{transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.wait{opacity:0;transform:translateY(16px)}
+@media (prefers-reduced-motion:reduce){.reveal,.reveal.wait{opacity:1;transform:none;transition:none}.pulse,.caret{animation:none}}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+<main>
+  <!-- HERO -->
+  <header class="hero col" id="start">
+    <p class="label">O introducere în inteligența artificială</p>
+    <h1>Cum învață <i>o mașină</i>?</h1>
+    <p class="lede">De la căutare și modele matematice la rețele neuronale, recunoaștere facială și ChatGPT. Fără formule, dar fără să simplificăm până la neadevăr.</p>
+    <div class="lab" style="width:100%;text-align:left" aria-live="polite">
+      <div class="lab-top"><span class="lab-title">Încălzire: tu ești modelul de limbaj</span><span class="note">alege continuarea</span></div>
+      <div class="sentence" id="nwText"></div>
+      <div class="choices" id="nwChoices"></div>
+      <p class="note" id="nwNote">Procentele arată cât de probabilă i se pare fiecare continuare unui model care a citit miliarde de propoziții.</p>
+    </div>
+  </header>
+
+  <!-- I -->
+  <section class="ch" id="drumuri">
+    <div class="head col reveal">
+      <span class="num">I.</span>
+      <h2>Două drumuri spre inteligență</h2>
+      <p class="lede">Primii cercetători credeau că inteligența înseamnă să cauți corect printre posibilități. Azi, aproape tot ce numim AI învață din date. Ambele idei sunt încă folosite.</p>
+    </div>
+    <div class="prose col reveal">
+      <p><b>AI-ul clasic</b> descrie o problemă ca un spațiu de stări și reguli, apoi le explorează sistematic. Așa găsește GPS-ul drumul cel mai scurt și așa a învins <b>Deep Blue</b> pe Garry Kasparov la șah, în 1997: evaluând sute de milioane de poziții pe secundă, după reguli scrise de oameni.</p>
+      <p>Încearcă mai jos. Desenează pereți cu un clic și compară o căutare „oarbă” cu una care folosește o estimare a distanței rămase.</p>
+    </div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Căutarea unui drum</span><span class="note">clic pe celule pentru pereți</span></div>
+      <div class="grid" id="grid" aria-label="Grilă pentru căutarea drumului"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>start</span><span><i style="background:var(--good)"></i>țintă</span><span><i style="background:var(--accent-soft)"></i>explorat</span><span><i style="background:var(--warm)"></i>drumul găsit</span></div>
+      <div class="btns">
+        <button class="btn primary" id="bfsBtn" type="button">Căutare oarbă (BFS)</button>
+        <button class="btn primary" id="astarBtn" type="button">Căutare cu estimare (A*)</button>
+        <button class="btn" id="clearBtn" type="button">Resetează</button>
+      </div>
+      <div class="stats" id="gridStats"><span>Alege un algoritm.</span></div>
+    </div>
+    <div class="prose col reveal">
+      <p><b>Învățarea automată</b> (machine learning) pornește invers. Nu îi spui calculatorului <em>cum</em> să rezolve problema; îi dai multe exemple de întrebări cu răspunsurile corecte, iar el își construiește singur o regulă. Merge acolo unde regulile sunt prea greu de scris: să recunoști o față, să traduci o glumă, să detectezi o tranzacție frauduloasă.</p>
+      <p>Cele două se pot combina. <b>AlphaGo</b>, care l-a învins pe campionul Lee Sedol la Go în 2016, a învățat din milioane de partide ce mutări par promițătoare, apoi a folosit căutarea ca să le verifice.</p>
+    </div>
+    <div class="wide reveal tbl">
+      <table>
+        <thead><tr><th></th><th>Căutare și reguli</th><th>Învățare automată</th></tr></thead>
+        <tbody>
+          <tr><td>Ce îi dai</td><td>Regulile problemei și un scop</td><td>Exemple: date cu răspunsuri</td></tr>
+          <tr><td>Ce produce</td><td>O soluție, pas cu pas, explicabilă</td><td>Un model care generalizează la cazuri noi</td></tr>
+          <tr><td>Unde strălucește</td><td>Șah, rute, planificare, orare</td><td>Imagini, limbaj, voce, predicții</td></tr>
+          <tr><td>Unde cedează</td><td>Lumea reală, prea haotică pentru reguli</td><td>Date puține sau părtinitoare; greu de explicat</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- II -->
+  <section class="ch" id="modelare">
+    <div class="head col reveal">
+      <span class="num">II.</span>
+      <h2>Ce înseamnă să „modelezi”</h2>
+      <p class="lede">Un model e o funcție cu butoane ajustabile, numite <span class="hl">parametri</span>. A antrena înseamnă a găsi poziția butoanelor pentru care modelul greșește cel mai puțin.</p>
+    </div>
+    <div class="prose col reveal">
+      <p>Cel mai simplu exemplu: vrem să estimăm prețul unei garsoniere din suprafața ei. Modelul nostru e o dreaptă cu doi parametri: cât costă un metru pătrat și un preț de bază. Fiecare punct de mai jos e un apartament (date inventate, ca exemplu).</p>
+      <p>Mișcă butoanele și urmărește <b>eroarea</b>. Apoi apasă „Antrenează” și lasă calculatorul să le ajusteze singur.</p>
+    </div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Un model cu doi parametri</span><span class="note">date ilustrative</span></div>
+      <svg id="regSvg" viewBox="0 0 640 300" role="img" aria-label="Prețul apartamentelor în funcție de suprafață și dreapta modelului"></svg>
+      <div class="two">
+        <div class="ctl"><div class="row"><label for="pA">Preț pe m²</label><span class="v" id="pAv"></span></div><input type="range" id="pA" min="0" max="3500" step="25"></div>
+        <div class="ctl"><div class="row"><label for="pB">Preț de bază</label><span class="v" id="pBv"></span></div><input type="range" id="pB" min="-40000" max="60000" step="500"></div>
+      </div>
+      <div class="two" style="align-items:center">
+        <div class="stats"><span>Epoca <b id="epN">0</b></span><span>Eroare medie <b id="errV"></b></span></div>
+        <div class="btns" style="justify-content:flex-end"><button class="btn primary" id="trainBtn" type="button">Antrenează</button><button class="btn" id="resetReg" type="button">De la zero</button></div>
+      </div>
+      <svg id="lossSvg" viewBox="0 0 640 90" role="img" aria-label="Eroarea scade de la o epocă la alta"></svg>
+    </div>
+    <div class="prose col reveal">
+      <p>Ce ai văzut are nume. <b>Funcția de eroare</b> măsoară cât de departe sunt predicțiile de realitate. La fiecare pas, algoritmul calculează în ce direcție să mute fiecare buton ca eroarea să scadă, ca un drumeț care coboară un deal în ceață, pipăind panta. Metoda se numește <b>coborâre pe gradient</b>.</p>
+      <p>O <b>epocă</b> este o trecere completă prin toate datele de antrenare. Aici au fost suficiente câteva zeci. Un model ca ChatGPT are sute de miliarde de parametri în loc de doi, dar principiul e același.</p>
+    </div>
+
+    <div class="col reveal" style="display:grid;gap:22px">
+      <div class="sep"></div>
+      <h3 style="text-align:center">De unde știm că modelul e bun? Împărțim datele</h3>
+      <div class="splitbar" aria-hidden="true"><div class="sb-train">antrenare · 70%</div><div class="sb-val">validare</div><div class="sb-test">test</div></div>
+      <div class="splitkey">
+        <div><b><span class="dot" style="background:var(--accent)"></span>Antrenare</b><span>Datele din care modelul învață. Ca exercițiile de la seminar.</span></div>
+        <div><b><span class="dot" style="background:var(--warm)"></span>Validare</b><span>Folosite pe parcurs ca să alegem setările. Ca simularea dinaintea examenului.</span></div>
+        <div><b><span class="dot" style="background:var(--muted)"></span>Test</b><span>Ținute deoparte până la final. Modelul nu are voie să le vadă. Examenul propriu-zis.</span></div>
+      </div>
+      <p>Proporțiile variază, dar regula de aur nu: dacă modelul a văzut datele de test, nota lui nu mai înseamnă nimic. E ca și cum ai primi subiectele înainte de examen.</p>
+    </div>
+
+    <div class="prose col reveal"><h3 style="text-align:center">Studentul care învață pe de rost</h3><p>Un model prea simplu nu prinde tiparul. Unul prea complicat <em>memorează</em> exemplele de antrenare, cu tot cu zgomot, și apoi greșește la date noi. Se numește <b>supraînvățare</b> (overfitting). Crește complexitatea și privește eroarea pe datele de test.</p></div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Subînvățare și supraînvățare</span><span class="note">● antrenare &nbsp; ○ test</span></div>
+      <svg id="ofSvg" viewBox="0 0 640 280" role="img" aria-label="Curba modelului față de punctele de antrenare și de test"></svg>
+      <div class="ctl"><div class="row"><label for="deg">Complexitatea modelului</label><span class="v" id="degV"></span></div><input type="range" id="deg" min="1" max="11" step="1" value="1"></div>
+      <div class="stats"><span>Eroare la antrenare <b id="ofTr"></b></span><span>Eroare la test <b id="ofTe"></b></span></div>
+      <p id="ofVerdict" style="font-size:.98rem"></p>
+    </div>
+  </section>
+
+  <!-- III -->
+  <section class="ch" id="neuroni">
+    <div class="head col reveal">
+      <span class="num">III.</span>
+      <h2>Rețele neuronale și creierul</h2>
+      <p class="lede">În 1958, Frank Rosenblatt a construit <em>perceptronul</em>, inspirat de neuronii biologici. Paralela e utilă, dar e o inspirație, nu o copie.</p>
+    </div>
+    <div class="wide reveal two">
+      <div class="lab">
+        <span class="label">Neuron biologic</span>
+        <svg viewBox="0 0 400 170" role="img" aria-label="Schița unui neuron biologic: dendrite, corp celular, axon, sinapse">
+          <g fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round">
+            <path d="M92 85 L50 50 L28 40 M50 50 L40 22 M92 85 L40 88 L16 78 M40 88 L20 104 M92 85 L55 128 L30 140 M55 128 L52 152"/>
+          </g>
+          <circle cx="100" cy="85" r="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M122 85 H312" stroke="var(--muted)" stroke-width="2.5"/>
+          <g fill="var(--warm-soft)" stroke="var(--warm)" stroke-width="1.5">
+            <rect x="140" y="79" width="30" height="12" rx="6"/><rect x="182" y="79" width="30" height="12" rx="6"/><rect x="224" y="79" width="30" height="12" rx="6"/><rect x="266" y="79" width="30" height="12" rx="6"/>
+          </g>
+          <g fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"><path d="M312 85 L340 62 M312 85 L346 85 M312 85 L340 108"/></g>
+          <g fill="var(--warm)"><circle cx="343" cy="60" r="4"/><circle cx="349" cy="85" r="4"/><circle cx="343" cy="110" r="4"/></g>
+          <g font-family="var(--f-mono)" font-size="10" fill="var(--muted)">
+            <text x="10" y="14">dendrite</text><text x="76" y="128">corp celular</text><text x="190" y="72">axon</text><text x="330" y="140">sinapse</text>
+          </g>
+        </svg>
+      </div>
+      <div class="lab">
+        <span class="label">Neuron artificial</span>
+        <svg viewBox="0 0 400 170" role="img" aria-label="Schița unui neuron artificial: intrări, ponderi, sumă, activare, ieșire">
+          <g stroke="var(--muted)" stroke-width="2"><line x1="46" y1="35" x2="178" y2="85"/><line x1="46" y1="85" x2="178" y2="85"/><line x1="46" y1="135" x2="178" y2="85"/></g>
+          <g fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5"><circle cx="36" cy="35" r="12"/><circle cx="36" cy="85" r="12"/><circle cx="36" cy="135" r="12"/></g>
+          <g font-family="var(--f-mono)" font-size="10" fill="var(--warm)"><text x="96" y="50">w₁</text><text x="104" y="80">w₂</text><text x="96" y="122">w₃</text></g>
+          <circle cx="198" cy="85" r="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+          <text x="198" y="91" text-anchor="middle" font-family="var(--f-display)" font-size="18" fill="var(--ink)">Σ</text>
+          <line x1="220" y1="85" x2="262" y2="85" stroke="var(--muted)" stroke-width="2"/>
+          <rect x="262" y="66" width="46" height="38" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5"/>
+          <path d="M270 96 C282 96 284 74 300 74" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <line x1="308" y1="85" x2="368" y2="85" stroke="var(--muted)" stroke-width="2"/><path d="M368 80 L378 85 L368 90 Z" fill="var(--muted)"/>
+          <g font-family="var(--f-mono)" font-size="10" fill="var(--muted)"><text x="8" y="14">intrări</text><text x="104" y="160">ponderi</text><text x="178" y="128">sumă</text><text x="258" y="122">activare</text><text x="340" y="72">ieșire</text></g>
+        </svg>
+      </div>
+    </div>
+    <div class="col reveal">
+      <div class="mapping">
+        <div><span>Dendritele primesc semnale</span><span class="arr">→</span><span class="r">Intrările (numere)</span></div>
+        <div><span>Sinapsele, mai puternice sau mai slabe</span><span class="arr">→</span><span class="r">Ponderile</span></div>
+        <div><span>Corpul celular însumează</span><span class="arr">→</span><span class="r">Suma ponderată</span></div>
+        <div><span>Se declanșează peste un prag</span><span class="arr">→</span><span class="r">Funcția de activare</span></div>
+        <div><span>Axonul transmite mai departe</span><span class="arr">→</span><span class="r">Ieșirea, spre stratul următor</span></div>
+        <div><span>Învățarea întărește sinapse</span><span class="arr">→</span><span class="r">Antrenarea ajustează ponderi</span></div>
+      </div>
+    </div>
+    <div class="prose col reveal">
+      <p>Mai jos e o rețea mică, cu un strat ascuns, care estimează dacă un e-mail e <b>phishing</b>. Mută intrările și urmărește cum circulă semnalul. Apasă pe un neuron ca să vezi calculul, sau pe o legătură ca s-o tai, ca o leziune.</p>
+    </div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">O rețea neuronală, din interior</span>
+        <div class="btns" role="group" aria-label="Terminologie"><button class="btn" id="termA" aria-pressed="true" type="button">Termeni AI</button><button class="btn" id="termB" aria-pressed="false" type="button">Termeni din biologie</button></div>
+      </div>
+      <svg id="nnSvg" viewBox="0 0 640 330" role="img" aria-label="Rețea neuronală cu patru intrări, trei neuroni ascunși și o ieșire"></svg>
+      <div class="two">
+        <div id="nnInputs" style="display:grid;gap:10px"></div>
+        <div class="info" id="nnInfo" aria-live="polite"></div>
+      </div>
+      <p class="note">Ponderile sunt alese de noi, ca exemplu. Într-o rețea reală ele rezultă din antrenare, iar neuronii ascunși nu au nume: rețeaua își inventează singură „detectoarele”.</p>
+    </div>
+    <div class="wide reveal facts">
+      <div class="fact"><span class="big">~86 mld.</span><span>neuroni în creierul uman, fiecare cu mii de sinapse</span></div>
+      <div class="fact"><span class="big">~20 W</span><span>consumul creierului, cât un bec mic. Un centru de date pentru AI consumă de milioane de ori mai mult</span></div>
+      <div class="fact"><span class="big">1958</span><span>perceptronul lui Rosenblatt, primul neuron artificial care învăța din exemple</span></div>
+      <div class="fact"><span class="big">≠</span><span>neuronii reali trimit impulsuri în timp și învață continuu; rețelele artificiale nu fac asta</span></div>
+    </div>
+  </section>
+
+  <!-- IV -->
+  <section class="ch" id="vedere">
+    <div class="head col reveal">
+      <span class="num">IV.</span>
+      <h2>Cum „vede” un calculator</h2>
+      <p class="lede">Pentru un calculator, o imagine e doar un tabel de numere. Recunoașterea apare strat cu strat: margini, apoi forme, apoi obiecte.</p>
+    </div>
+    <div class="wide reveal layers">
+      <div class="on"><span class="label">Strat 1</span><b>Margini</b><span>unde se schimbă brusc luminozitatea</span></div>
+      <div><span class="label">Strat 2</span><b>Forme</b><span>cercuri, colțuri, linii paralele</span></div>
+      <div><span class="label">Strat 3</span><b>Părți</b><span>cadran, ace, brățară</span></div>
+      <div><span class="label">Ieșire</span><b>„Ceas”, 97%</b><span>combinația tuturor indiciilor</span></div>
+    </div>
+    <div class="prose col reveal">
+      <p>Hai să ne uităm doar la <b>primul strat</b>, cel mai ușor de văzut. O <b>margine</b> e locul unde un pixel e mult mai deschis sau mai închis decât vecinii lui: conturul cadranului, un ac pe fundal alb.</p>
+      <p>Rețeaua le găsește cu un <b>filtru</b>: o grilă mică de 3×3 numere care alunecă peste toată imaginea. În fiecare poziție, înmulțește cei 9 pixeli de sub ea cu numerele filtrului și adună rezultatul. Pe o zonă uniformă, suma iese aproape zero. Pe o margine, iese mare.</p>
+    </div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Un filtru, în acțiune</span><span class="note">alege un filtru, apoi trece cu mouse-ul sau degetul peste imagine</span></div>
+      <div class="btns" id="cvBtns" style="justify-content:center">
+        <button class="btn" data-m="orig" aria-pressed="true" type="button">Imaginea originală</button>
+        <button class="btn" data-m="v" aria-pressed="false" type="button">Filtru: margini verticale</button>
+        <button class="btn" data-m="h" aria-pressed="false" type="button">Filtru: margini orizontale</button>
+        <button class="btn" data-m="all" aria-pressed="false" type="button">Ambele combinate</button>
+      </div>
+      <canvas id="cv" class="cv" width="240" height="240" aria-label="Imaginea unui ceas, procesată cu filtre de margini"></canvas>
+      <div class="conv" id="conv" aria-live="polite"></div>
+      <div class="conv-cap note"><span>pixelii de sub cursor</span><span>numerele filtrului</span><span>rezultatul</span></div>
+      <p class="note" id="convNote" style="text-align:center"></p>
+    </div>
+    <div class="prose col reveal">
+      <p>Filtrele de aici sunt scrise de mână. Într-o rețea reală, nimeni nu le scrie: rețeaua pornește cu numere aleatoare și, prin antrenare, ajunge singură la sute de filtre utile. Straturile următoare aplică filtre peste rezultatele filtrelor, și așa marginile devin forme, formele devin părți, iar părțile devin „ceas”.</p>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">Ceasul de pe masă sau poza unui ceas?</h3>
+      <p>Iată o întrebare bună. Arată-i unui clasificator obișnuit de imagini un ceas adevărat și apoi o fotografie cu același ceas: va spune „ceas” la amândouă. Și, din punctul lui de vedere, are dreptate. Vede doar pixeli, iar pixelii seamănă.</p>
+      <p>Ca să facă diferența, sistemul are nevoie de indicii pe care o fotografie nu le poate avea:</p>
+    </div>
+    <div class="wide reveal cards">
+      <div class="card"><span class="label">Adâncime</span><h3>3D față de plat</h3><p>Camerele cu senzori de adâncime sau lidar măsoară distanța până la fiecare punct. Un ceas are relief; o poză e o suprafață plană.</p></div>
+      <div class="card"><span class="label">Mișcare</span><h3>Paralaxă</h3><p>Când miști camera, părțile apropiate ale unui obiect real se deplasează diferit de cele îndepărtate. O poză se mișcă toată deodată.</p></div>
+      <div class="card"><span class="label">Timp</span><h3>Secundarul</h3><p>Într-un video, acele ceasului real avansează. Cele din poză stau pe loc.</p></div>
+      <div class="card"><span class="label">Lumină</span><h3>Reflexii și textură</h3><p>Sticla reflectă altfel decât hârtia. Imprimarea are puncte de cerneală, iar un ecran fotografiat lasă tipare de interferență.</p></div>
+    </div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Paralaxa, pe înțeles</span><span class="note">mișcă „telefonul”</span></div>
+      <div class="two">
+        <div style="display:grid;gap:6px;justify-items:center"><svg id="pxReal" viewBox="0 0 280 200" role="img" aria-label="Ceas real: straturile se mișcă diferit"></svg><span class="label">obiect real</span></div>
+        <div style="display:grid;gap:6px;justify-items:center"><svg id="pxPhoto" viewBox="0 0 280 200" role="img" aria-label="Poza unui ceas: se mișcă rigid"></svg><span class="label">fotografie</span></div>
+      </div>
+      <div class="ctl"><div class="row"><label for="pxR">Poziția camerei</label><span class="v" id="pxV"></span></div><input type="range" id="pxR" min="-100" max="100" value="0"></div>
+    </div>
+  </section>
+
+  <!-- V -->
+  <section class="ch" id="fete">
+    <div class="head col reveal">
+      <span class="num">V.</span>
+      <h2>Recunoașterea facială</h2>
+      <p class="lede">Sistemul nu păstrează poza ta. Îți transformă fața într-o listă de numere și compară liste.</p>
+    </div>
+    <div class="wide reveal steps4">
+      <div><span class="n">1</span><b>Detectare</b><span>Unde e o față în imagine? Un model găsește conturul ei.</span></div>
+      <div><span class="n">2</span><b>Aliniere</b><span>Fața e rotită și scalată ca ochii și gura să fie mereu în același loc.</span></div>
+      <div><span class="n">3</span><b>Amprentă numerică</b><span>O rețea neuronală o transformă în câteva sute de numere (un <em>embedding</em>).</span></div>
+      <div><span class="n">4</span><b>Comparare</b><span>Dacă distanța dintre două amprente e sub un prag, e aceeași persoană.</span></div>
+    </div>
+    <div class="prose col reveal"><p>Imaginează-ți fiecare amprentă ca un punct pe o hartă. Pozele aceleiași persoane cad aproape unele de altele. Pragul decide cât de aproape trebuie să fie un punct nou ca să fie acceptat.</p></div>
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Pragul de acceptare</span><span class="note">hartă simplificată în 2D</span></div>
+      <svg id="embSvg" viewBox="0 0 640 320" role="img" aria-label="Hartă a amprentelor faciale cu un cerc de acceptare în jurul tău"></svg>
+      <div class="ctl"><div class="row"><label for="thr">Prag (raza de acceptare)</label><span class="v" id="thrV"></span></div><input type="range" id="thr" min="10" max="160" value="48"></div>
+      <div class="stats"><span>Pozele tale acceptate <b id="embOk"></b></span><span>Alte persoane acceptate greșit <b id="embBad"></b></span></div>
+      <p id="embVerdict" style="font-size:.98rem"></p>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">De ce Face ID nu se lasă păcălit de o poză</h3>
+      <p>Telefonul nu se uită doar la o imagine. Camera TrueDepth proiectează peste <b>30.000 de puncte infraroșii</b> invizibile pe fața ta și citește cum se deformează, construind o hartă de adâncime. O fotografie, pe hârtie sau pe ecran, e plată, iar în infraroșu nu arată ca pielea.</p>
+      <p>Apple mai adaugă câteva straturi: o rețea neuronală separată, antrenată special să recunoască măști și încercări de păcălire; verificarea că ai ochii deschiși și te uiți la ecran; și un tipar de captare aleator, ca înregistrările vechi să nu poată fi refolosite.</p>
+    </div>
+    <div class="wide reveal facts">
+      <div class="fact"><span class="big">30.000+</span><span>puncte infraroșii proiectate pentru harta de adâncime</span></div>
+      <div class="fact"><span class="big">1 : 1.000.000</span><span>șansa ca un străin oarecare să-ți deblocheze telefonul (față de 1 : 50.000 la amprentă)</span></div>
+      <div class="fact"><span class="big">Gemenii</span><span>și copiii sub 13 ani sunt excepția. Apple recomandă pentru ei un cod</span></div>
+      <div class="fact"><span class="big">Local</span><span>amprenta facială e criptată pe telefon, în Secure Enclave, și nu ajunge în cloud sau în backup</span></div>
+    </div>
+
+    <div class="prose col reveal"><h3 style="text-align:center">Unde o întâlnești</h3></div>
+    <div class="wide reveal cards">
+      <div class="card"><span class="label">Telefon</span><h3>Deblocare și plăți</h3><p>Verificare unu-la-unu: ești tu persoana înregistrată?</p></div>
+      <div class="card"><span class="label">Aeroport</span><h3>Porțile automate</h3><p>Fața ta e comparată cu poza din cipul pașaportului.</p></div>
+      <div class="card"><span class="label">Galeria foto</span><h3>Gruparea pe persoane</h3><p>Telefonul îți grupează singur pozele cu aceiași oameni, fără să-i știe pe nume.</p></div>
+      <div class="card"><span class="label">Spațiul public</span><h3>Supraveghere</h3><p>Identificare unu-la-mulți: cine e omul ăsta, dintr-o bază de milioane? Aici încep controversele.</p></div>
+    </div>
+    <div class="col reveal" style="display:grid;gap:16px">
+      <div class="callout"><span class="label">Erori inegale</span>Studiul <em>Gender Shades</em> (2018) a arătat că sisteme comerciale de analiză facială greșeau mult mai des la femeile cu pielea închisă la culoare decât la bărbații cu pielea deschisă. Cauza: datele de antrenare nu erau echilibrate.</div>
+      <div class="callout"><span class="label">Ce spune legea în UE</span>Din 2 februarie 2025, AI Act interzice construirea bazelor de date faciale prin colectarea nețintită de poze de pe internet sau din camere de supraveghere, recunoașterea emoțiilor la locul de muncă și în educație (cu excepții medicale și de siguranță) și identificarea biometrică în timp real în spații publice de către poliție, cu excepții strict delimitate.</div>
+    </div>
+  </section>
+
+  <!-- VI -->
+  <section class="ch" id="zilnic">
+    <div class="head col reveal">
+      <span class="num">VI.</span>
+      <h2>AI-ul pe care nu-l observi</h2>
+      <p class="lede">Probabil ai folosit învățare automată de zeci de ori azi, fără să deschizi nicio aplicație de AI.</p>
+    </div>
+    <div class="wide reveal cards">
+      <div class="card"><span class="label">Camera foto</span><h3>Fotografie computațională</h3><p>Modul noapte combină mai multe cadre, iar modul portret estimează adâncimea ca să estompeze fundalul.</p></div>
+      <div class="card"><span class="label">Tastatura</span><h3>Sugestii și autocorect</h3><p>Un model de limbaj mic, care rulează pe telefon și învață cum scrii tu.</p></div>
+      <div class="card"><span class="label">Cardul</span><h3>Detectarea fraudei</h3><p>Fiecare plată e evaluată în câteva milisecunde: seamănă cu obiceiurile tale?</p></div>
+      <div class="card"><span class="label">Hărți</span><h3>Timpul estimat</h3><p>Traficul e prezis din viteza anonimizată a altor telefoane și din istoric.</p></div>
+      <div class="card"><span class="label">Feed-ul</span><h3>Recomandări</h3><p>Ce vezi pe TikTok, Instagram sau YouTube e ales de un model care prezice la ce te vei uita.</p></div>
+      <div class="card"><span class="label">Prețuri</span><h3>Tarife dinamice</h3><p>Biletele de avion și cursele de ride-sharing se scumpesc după cererea estimată.</p></div>
+      <div class="card"><span class="label">E-mail</span><h3>Filtrul de spam</h3><p>Unul dintre primele succese ale învățării automate, încă la datorie.</p></div>
+      <div class="card"><span class="label">Galeria</span><h3>Căutare după conținut</h3><p>Scrii „plajă” sau „pizza” și găsește pozele, deși nu le-ai etichetat niciodată.</p></div>
+      <div class="card"><span class="label">Angajare</span><h3>Filtrarea CV-urilor</h3><p>Unele firme triază automat candidații. În UE, astfel de sisteme sunt considerate cu risc ridicat.</p></div>
+    </div>
+  </section>
+
+  <!-- VII -->
+  <section class="ch" id="llm">
+    <div class="head col reveal">
+      <span class="num">VII.</span>
+      <h2>Cum funcționează ChatGPT și Claude</h2>
+      <p class="lede">Sunt <span class="hl">modele mari de limbaj</span> (LLM): rețele neuronale uriașe antrenate să prezică următoarea bucată de text. Jocul de la început, repetat de mii de ori pe secundă.</p>
+    </div>
+    <div class="wide reveal stages">
+      <div class="stage"><span class="label">Etapa 1 · Pre-antrenare</span><h3>Citește o bibliotecă</h3><p>Cantități uriașe de text: cărți, articole, site-uri, cod. Un singur exercițiu, repetat de miliarde de ori: ghicește cuvântul următor.</p><p class="like">Știe cum sună limba, dar încă nu știe să converseze.</p></div>
+      <div class="stage"><span class="label">Etapa 2 · Ajustare</span><h3>Învață să fie asistent</h3><p>Primește exemple de dialoguri bune, scrise de oameni: o cerere și un răspuns util.</p><p class="like">Un absolvent care face un stagiu.</p></div>
+      <div class="stage"><span class="label">Etapa 3 · Feedback uman</span><h3>Primește note</h3><p>Oamenii compară răspunsuri și aleg pe cel mai bun. Modelul învață ce preferă oamenii.</p><p class="like">Un mentor care corectează.</p></div>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">Tokeni: cum citește textul</h3>
+      <p>Modelul nu vede litere, ci <b>tokeni</b>: bucăți de text care pot fi un cuvânt întreg, o parte de cuvânt sau un semn. Fiecare token devine un șir de numere.</p>
+    </div>
+    <div class="lab col reveal">
+      <div class="lab-top"><span class="lab-title">Scrie și vezi tokenii</span><span class="note">aproximare simplificată</span></div>
+      <label for="tokIn" class="note">Textul tău</label>
+      <textarea id="tokIn" class="tokin">Recunoașterea facială funcționează și în întuneric?</textarea>
+      <div class="tokout" id="tokOut" aria-live="polite"></div>
+      <p class="note" id="tokCount"></p>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">Atenția: de unde știe ce vrei să spui</h3>
+      <p>Ideea care a făcut posibil ChatGPT vine dintr-un articol publicat de cercetători Google în 2017, care a introdus arhitectura <b>Transformer</b>. Mecanismul ei central, <em>atenția</em>, lasă fiecare cuvânt să „se uite” la celelalte ca să-și stabilească sensul.</p>
+    </div>
+    <div class="lab col reveal">
+      <div class="lab-top"><span class="lab-title">La ce se uită cuvântul „bancă”?</span></div>
+      <div class="btns"><button class="btn" id="attA" aria-pressed="true" type="button">Propoziția 1</button><button class="btn" id="attB" aria-pressed="false" type="button">Propoziția 2</button></div>
+      <div class="att" id="att"></div>
+      <p class="note" id="attNote"></p>
+    </div>
+
+    <div class="prose col reveal">
+      <p>Tot ce s-a scris în conversație intră în calcul la fiecare cuvânt nou. Acest spațiu se numește <b>fereastra de context</b>: memoria de lucru a modelului, mare, dar limitată.</p>
+      <h3 style="text-align:center">Temperatura: de ce nu primești de două ori același răspuns</h3>
+      <p>Modelul nu alege mereu cuvântul cel mai probabil. Uneori îl alege pe al doilea sau al treilea. Parametrul care reglează cât de des se numește <b>temperatură</b>.</p>
+    </div>
+    <div class="lab col reveal">
+      <div class="lab-top"><span class="lab-title">Aceeași cerere, temperaturi diferite</span><span class="note">„Prima propoziție a unei povești despre mare.”</span></div>
+      <div class="ctl"><div class="row"><label for="tempR">Temperatură</label><span class="v" id="tempV"></span></div><input type="range" id="tempR" min="0" max="2" step="1" value="1"></div>
+      <p class="tempout" id="tempOut"></p>
+    </div>
+  </section>
+
+  <!-- VIII -->
+  <section class="ch" id="cautare">
+    <div class="head col reveal">
+      <span class="num">VIII.</span>
+      <h2>Nu e un motor de căutare</h2>
+      <p class="lede">Arată la fel: o căsuță în care scrii o întrebare. Dar ce se întâmplă în spate e complet diferit.</p>
+    </div>
+    <div class="wide reveal two vs">
+      <div class="panel"><span class="label">Google</span><h3>Găsește ce există deja</h3><ul><li>Are un index cu miliarde de pagini web.</li><li>Îți arată unde e informația; tu citești sursa.</li><li>Rezultatele au fost scrise de cineva.</li></ul></div>
+      <div class="panel on"><span class="label">ChatGPT, Claude, Gemini</span><h3>Compune un text nou</h3><ul><li>Scrie răspunsul cuvânt cu cuvânt, din tiparele învățate.</li><li>Cunoștințele se opresc la o dată limită.</li><li>Poate suna sigur pe el chiar și când greșește.</li></ul></div>
+    </div>
+    <div class="prose col reveal"><p>Ce complică lucrurile: multe asistente au acum și o unealtă de căutare. Când o folosesc, caută pe web, citesc câteva pagini și îți scriu un rezumat, de obicei cu linkuri. Dacă vezi surse citate, a căutat. Dacă nu, a răspuns din ce a învățat la antrenare.</p></div>
+  </section>
+
+  <!-- IX -->
+  <section class="ch" id="mituri">
+    <div class="head col reveal">
+      <span class="num">IX.</span>
+      <h2>Adevărat sau fals?</h2>
+      <p class="lede">Gândește-te întâi, apoi apasă pe card.</p>
+    </div>
+    <div class="wide reveal myths" id="myths"></div>
+  </section>
+
+  <section class="ch" id="informare">
+    <div class="head col reveal">
+      <span class="num">X.</span>
+      <h2>AI-ul ca unealtă de dezinformare</h2>
+      <p class="lede">Aceleași modele care scriu, desenează și vorbesc pot produce, în câteva minute și aproape gratis, un video, o voce sau o știre care nu au existat niciodată.</p>
+    </div>
+    <div class="prose col reveal">
+      <p>Problema nu e doar că falsurile arată mai bine. E că se pot face <b>în masă</b>: zeci de variante ale aceluiași mesaj, publicate de zeci de conturi, testate să vadă care prinde. Algoritmul de recomandare al rețelei sociale face restul, pentru că împinge mai departe ce provoacă reacții puternice.</p>
+    </div>
+
+    <div class="lab wide reveal">
+      <div class="lab-top"><span class="lab-title">Un exemplu real, de pe TikTok</span><span class="note">apasă pe un indiciu ca să sari la momentul lui</span></div>
+      <div class="fake">
+        <div class="vwrap"><video id="fakeVid" controls playsinline preload="metadata" poster="media/tiktok-poster.jpg" aria-label="Videoclip fals de pe TikTok cu Cristiano Ronaldo"><source src="media/tiktok-fals.mp4" type="video/mp4"></video><span class="stamp">FALS</span></div>
+        <div style="display:grid;gap:14px;min-width:0">
+          <p>Textul de pe ecran spune că <b>„Până și Cristiano Ronaldo îl susține pe Călin Georgescu”</b>. Clipul arată ca un selfie filmat într-un KFC. Uită-te după indiciile de mai jos:</p>
+          <div class="tells" id="tells"></div>
+        </div>
+      </div>
+      <p class="note">Clipul e inclus aici strict ca exemplu educativ de conținut fals. Nu reprezintă o declarație a persoanelor care apar în el.</p>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">De ce contează: cazul României</h3>
+      <p>Pe 6 decembrie 2024, Curtea Constituțională a anulat alegerile prezidențiale, după ce documente declasificate ale CSAT au descris o campanie coordonată pe TikTok, cu rețele de conturi și influenceri plătiți. Pe 17 decembrie, Comisia Europeană a deschis proceduri formale împotriva TikTok, în baza Regulamentului privind serviciile digitale (DSA). Ancheta privește sistemul de recomandare, riscul de manipulare coordonată și publicitatea politică.</p>
+      <p>Falsurile au continuat. În ianuarie 2025, Digi24 a semnalat un cont de TikTok care publica știri inventate cu identitatea vizuală a unor televiziuni, inclusiv declarații false atribuite președintelui și premierului de atunci. Iar fenomenul nu e local: în ianuarie 2024, alegătorii din New Hampshire au primit apeluri telefonice cu vocea clonată a președintelui american, care îi îndemna să nu meargă la vot.</p>
+    </div>
+
+    <div class="wide reveal steps4">
+      <div><span class="n">1</span><b>Generare</b><span>Zeci de clipuri, imagini sau texte, în câteva minute.</span></div>
+      <div><span class="n">2</span><b>Credibilitate împrumutată</b><span>Fața unei celebrități, logoul unei televiziuni, vocea unui politician.</span></div>
+      <div><span class="n">3</span><b>Distribuire coordonată</b><span>Multe conturi postează același mesaj, ca să pară că „toată lumea” vorbește despre el.</span></div>
+      <div><span class="n">4</span><b>Amplificare</b><span>Algoritmul promovează ce stârnește emoție, iar falsul ajunge la milioane de oameni.</span></div>
+    </div>
+
+    <div class="prose col reveal">
+      <h3 style="text-align:center">Cum te aperi: patru reflexe</h3>
+      <p style="text-align:center">Metoda se numește SIFT și e folosită de bibliotecari și jurnaliști. Detectoarele automate de AI nu sunt de încredere; reflexele astea sunt.</p>
+    </div>
+    <div class="wide reveal sift">
+      <div><span class="n">Oprește-te</span><b>Înainte de share</b><span>Dacă un clip te înfurie sau te entuziasmează instant, e exact momentul să încetinești.</span></div>
+      <div><span class="n">Verifică sursa</span><b>Cine a postat?</b><span>Contul oficial al persoanei sau un cont anonim, creat recent, cu un nume oarecare?</span></div>
+      <div><span class="n">Caută în altă parte</span><b>Mai scrie cineva?</b><span>O declarație reală a unei vedete despre alegerile din România ar fi în toată presa.</span></div>
+      <div><span class="n">Urmărește originalul</span><b>De unde vine?</b><span>Căutare inversă după imagine (Google Lens), cadru cu cadru. Mergi până la prima apariție.</span></div>
+    </div>
+
+    <div class="lab col reveal">
+      <div class="lab-top"><span class="lab-title">Lista ta de verificare</span><span class="note">bifează pentru clipul de mai sus</span></div>
+      <div class="check" id="check"></div>
+      <div class="meter"><i id="meterFill"></i></div>
+      <p class="note" id="checkNote"></p>
+    </div>
+
+    <div class="col reveal" style="display:grid;gap:16px">
+      <div class="callout"><span class="label">Și chatbot-urile pot greși</span>ChatGPT sau Claude pot „halucina” o sursă sau o cifră. Când un răspuns contează, cere-i sursele și deschide-le tu. Dacă linkul nu există sau nu spune ce susține modelul, ai găsit o eroare.</div>
+      <div class="callout"><span class="label">Unde verifici în română</span>Platforme de fact-checking precum Factual.ro și Veridica.ro analizează afirmații și clipuri virale. Raportează falsurile direct în aplicație: platformele mari au obligații legale în UE să trateze aceste semnalări.</div>
+    </div>
+  </section>
+
+  <footer class="col reveal">
+    <span class="num">Pe scurt</span>
+    <p class="final">Un model nu știe lucruri cum știm noi. A văzut atât de multe exemple încât a devenit foarte bun la a ghici ce urmează.</p>
+    <div class="sources"><span>Surse:</span>
+      <a href="https://romania.representation.ec.europa.eu/news/comisia-initiaza-proceduri-oficiale-impotriva-tiktok-cu-privire-la-riscurile-electorale-temeiul-2024-12-17_ro">Comisia Europeană, proceduri împotriva TikTok (17.12.2024)</a>
+      <a href="https://www.digi24.ro/stiri/stiri-false-care-il-pun-intr-o-lumina-buna-pe-calin-georgescu-sunt-raspandite-pe-tiktok-identitatea-digi24-ro-folosita-abuziv-3103337">Digi24, știri false răspândite pe TikTok (31.01.2025)</a>
+      <a href="https://apple.com/business-docs/FaceID_Security_Guide.pdf">Apple, Face ID Security Guide</a>
+      <a href="https://www.orrick.com/en/insights/2025/04/eu-commission-publishes-guidelines-on-the-prohibited-ai-practices-under-the-ai-act">Orrick, ghidul Comisiei privind practicile interzise din AI Act</a>
+    </div>
+    <a href="#start">↑ Înapoi la început</a>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function sig(z){return 1/(1+Math.exp(-z))}
+  function rng(s){return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+  function gauss(r){var u=r()||1e-9,v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+  function fmt(n){return Math.round(n).toLocaleString('ro-RO')}
+
+  /* ---------- next word ---------- */
+  var start = "Examenul e mâine la opt, așa că în seara asta";
+  var tree = [
+    ["învăț",58,[["din cursuri.",44],["cu colegii.",29],["până dimineața.",24],["din TikTok-uri.",3]]],
+    ["mă culc devreme",22,[["ca să fiu odihnit.",52],["și recapitulez la cafea.",31],["și sper să fie bine.",15],["cu cursul sub pernă.",2]]],
+    ["beau o cafea",17,[["și recapitulez tot.",48],["și mă apuc de învățat.",37],["și deschid Netflix.",13],["și mă rog.",2]]],
+    ["plec în Bali",1,[["fără să spun nimănui.",41],["și revin la restanță.",38],["cu tot cu cursurile.",19],["pe bursă.",2]]]
+  ];
+  var pick = [];
+  function nw(){
+    var html = esc(start);
+    pick.forEach(function(p){ html += ' <span class="added">'+esc(p[0])+'</span>'; });
+    $('nwText').innerHTML = html + (pick.length<2?'<span class="caret" aria-hidden="true"></span>':'');
+    var box = $('nwChoices'); box.innerHTML='';
+    var opts = pick.length===0 ? tree : pick.length===1 ? pick[0][2] : null;
+    if (opts){
+      opts.forEach(function(o){
+        var b=document.createElement('button'); b.type='button'; b.className='choice';
+        b.innerHTML='<span class="bar" style="width:'+o[1]+'%"></span><span>'+esc(o[0])+'</span><span class="p">'+o[1]+'%</span>';
+        b.onclick=function(){ pick.push(o); nw(); };
+        box.appendChild(b);
+      });
+    } else {
+      var low = pick.some(function(p){return p[1]<10});
+      $('nwNote').innerHTML = '<b>Exact asta face un model de limbaj:</b> alege următoarea bucată de text, iar și iar. '+(low?'Ai ales și o variantă improbabilă. Modelele fac asta uneori intenționat, ca textul să nu fie previzibil.':'Ai mers pe variantele probabile, de aceea propoziția sună firesc.');
+      var r=document.createElement('button'); r.type='button'; r.className='btn'; r.textContent='Încă o dată';
+      r.onclick=function(){ pick=[]; $('nwNote').textContent='Procentele arată cât de probabilă i se pare fiecare continuare unui model care a citit miliarde de propoziții.'; nw(); };
+      box.appendChild(r);
+    }
+  }
+  nw();
+
+  /* ---------- grid search ---------- */
+  var C=20,R=11,S=[1,5],G=[18,5],walls={},cells=[],timer=null;
+  function key(x,y){return x+','+y}
+  function defaultWalls(){ walls={}; for(var y=0;y<=7;y++) walls[key(7,y)]=1; for(var y=3;y<R;y++) walls[key(13,y)]=1; }
+  defaultWalls();
+  var gEl=$('grid');
+  for(var y=0;y<R;y++) for(var x=0;x<C;x++){
+    var d=document.createElement('div'); d.className='cell'; d.dataset.x=x; d.dataset.y=y;
+    d.onclick=(function(x,y){return function(){ if((x===S[0]&&y===S[1])||(x===G[0]&&y===G[1]))return; var k=key(x,y); if(walls[k]) delete walls[k]; else walls[k]=1; paintBase(); };})(x,y);
+    gEl.appendChild(d); cells.push(d);
+  }
+  function cellAt(x,y){return cells[y*C+x]}
+  function paintBase(){
+    if(timer){cancelAnimationFrame(timer);timer=null}
+    cells.forEach(function(c){ var x=+c.dataset.x,y=+c.dataset.y; c.className='cell'+(walls[key(x,y)]?' wall':''); });
+    cellAt(S[0],S[1]).classList.add('start'); cellAt(G[0],G[1]).classList.add('goal');
+  }
+  paintBase();
+  function solve(astar){
+    var g={},par={},order=[],open=[[S[0],S[1]]],closed={};
+    g[key(S[0],S[1])]=0;
+    function h(x,y){return Math.abs(x-G[0])+Math.abs(y-G[1])}
+    while(open.length){
+      var i=0;
+      if(astar){ for(var j=1;j<open.length;j++){ var a=open[j],b=open[i]; var fa=g[key(a[0],a[1])]+h(a[0],a[1]), fb=g[key(b[0],b[1])]+h(b[0],b[1]); if(fa<fb||(fa===fb&&h(a[0],a[1])<h(b[0],b[1]))) i=j; } }
+      var cur=open.splice(i,1)[0], ck=key(cur[0],cur[1]);
+      if(closed[ck]) continue; closed[ck]=1; order.push(cur);
+      if(cur[0]===G[0]&&cur[1]===G[1]) break;
+      [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(dv){
+        var nx=cur[0]+dv[0],ny=cur[1]+dv[1],nk=key(nx,ny);
+        if(nx<0||ny<0||nx>=C||ny>=R||walls[nk]||closed[nk])return;
+        var ng=g[ck]+1; if(g[nk]===undefined||ng<g[nk]){ g[nk]=ng; par[nk]=cur; open.push([nx,ny]); }
+      });
+    }
+    var path=[],k=key(G[0],G[1]);
+    if(closed[k]){ var c=G; while(c){ path.unshift(c); c=par[key(c[0],c[1])]; } }
+    return {order:order,path:path};
+  }
+  function run(astar){
+    paintBase(); var res=solve(astar), i=0;
+    var name = astar?'A*':'BFS';
+    function finish(){
+      res.path.forEach(function(p){ var c=cellAt(p[0],p[1]); if(!c.classList.contains('start')&&!c.classList.contains('goal')) c.classList.add('path'); });
+      $('gridStats').innerHTML = '<span>'+name+': celule explorate <b>'+res.order.length+'</b></span>'+(res.path.length?'<span>lungimea drumului <b>'+(res.path.length-1)+'</b> pași</span>':'<span><b>nu există drum</b></span>');
+    }
+    if(reduce){ res.order.forEach(function(p){cellAt(p[0],p[1]).classList.add('seen')}); finish(); return; }
+    (function step(){
+      for(var n=0;n<3&&i<res.order.length;n++,i++){ var p=res.order[i],c=cellAt(p[0],p[1]); if(!c.classList.contains('start')&&!c.classList.contains('goal')) c.classList.add('seen'); }
+      $('gridStats').innerHTML='<span>'+name+': explorez… <b>'+i+'</b> celule</span>';
+      if(i<res.order.length) timer=requestAnimationFrame(step); else { timer=null; finish(); }
+    })();
+  }
+  $('bfsBtn').onclick=function(){run(false)};
+  $('astarBtn').onclick=function(){run(true)};
+  $('clearBtn').onclick=function(){ defaultWalls(); paintBase(); $('gridStats').innerHTML='<span>Alege un algoritm.</span>'; };
+
+  /* ---------- regression ---------- */
+  var Rr=rng(3), pts=[];
+  for(var i=0;i<28;i++){ var x=22+58*Rr(); pts.push([x,1850*x+9000+gauss(Rr)*9000]); }
+  var A0=600,B0=40000, pa=A0, pb=B0, ep=0, hist=[], training=null;
+  var rx0=60,rx1=620,ry0=20,ry1=260, X0=15,X1=90, Y0=0,Y1=200000;
+  function sx(x){return rx0+(x-X0)/(X1-X0)*(rx1-rx0)}
+  function sy(y){return ry1-(y-Y0)/(Y1-Y0)*(ry1-ry0)}
+  function mae(a,b){return pts.reduce(function(s,p){return s+Math.abs(a*p[0]+b-p[1])},0)/pts.length}
+  function drawReg(){
+    var s='';
+    [0,50000,100000,150000,200000].forEach(function(v){ s+='<line x1="'+rx0+'" x2="'+rx1+'" y1="'+sy(v)+'" y2="'+sy(v)+'" stroke="var(--line)"/><text x="'+(rx0-8)+'" y="'+(sy(v)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">'+(v/1000)+'k €</text>'; });
+    [20,40,60,80].forEach(function(v){ s+='<text x="'+sx(v)+'" y="'+(ry1+20)+'" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">'+v+' m²</text>'; });
+    s+='<defs><clipPath id="rc"><rect x="'+rx0+'" y="'+ry0+'" width="'+(rx1-rx0)+'" height="'+(ry1-ry0)+'"/></clipPath></defs><g clip-path="url(#rc)">';
+    pts.forEach(function(p){ var py=pa*p[0]+pb; s+='<line x1="'+sx(p[0])+'" x2="'+sx(p[0])+'" y1="'+sy(p[1])+'" y2="'+sy(py)+'" stroke="var(--warm)" stroke-opacity=".45" stroke-width="1.2"/>'; });
+    s+='<line x1="'+sx(X0)+'" y1="'+sy(pa*X0+pb)+'" x2="'+sx(X1)+'" y2="'+sy(pa*X1+pb)+'" stroke="var(--accent)" stroke-width="2.5"/></g>';
+    pts.forEach(function(p){ s+='<circle cx="'+sx(p[0])+'" cy="'+sy(p[1])+'" r="4.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>'; });
+    $('regSvg').innerHTML=s;
+    $('pA').value=pa; $('pB').value=pb;
+    $('pAv').textContent=fmt(pa)+' €/m²'; $('pBv').textContent=fmt(pb)+' €';
+    $('errV').textContent='± '+fmt(mae(pa,pb))+' €'; $('epN').textContent=ep;
+    drawLoss();
+  }
+  function drawLoss(){
+    var s='<line x1="60" x2="620" y1="78" y2="78" stroke="var(--line)"/><text x="52" y="20" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--f-mono)">eroare</text><text x="620" y="90" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--f-mono)">epoci →</text>';
+    if(hist.length>1){
+      var mx=hist[0], n=Math.max(60,hist.length-1), d='';
+      hist.forEach(function(v,i){ d+=(i?'L':'M')+(60+i/n*560).toFixed(1)+' '+(78-v/mx*66).toFixed(1); });
+      s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2"/>';
+      var li=hist.length-1; s+='<circle cx="'+(60+li/n*560)+'" cy="'+(78-hist[li]/mx*66)+'" r="3.5" fill="var(--accent)"/>';
+    } else s+='<text x="340" y="50" text-anchor="middle" font-size="12" fill="var(--muted)">Curba erorii apare aici în timpul antrenării.</text>';
+    $('lossSvg').innerHTML=s;
+  }
+  function stopTrain(){ if(training){clearInterval(training);training=null;$('trainBtn').textContent='Antrenează';} }
+  $('pA').oninput=function(){ stopTrain(); pa=+this.value; drawReg(); };
+  $('pB').oninput=function(){ stopTrain(); pb=+this.value; drawReg(); };
+  $('trainBtn').onclick=function(){
+    if(training){stopTrain();return}
+    this.textContent='Oprește';
+    var w=pa*15/1e5, c=(pb+pa*50)/1e5; if(!hist.length) hist.push(mae(pa,pb));
+    var steps=0;
+    training=setInterval(function(){
+      var gw=0,gc=0; pts.forEach(function(p){ var xp=(p[0]-50)/15, yp=p[1]/1e5, e=w*xp+c-yp; gw+=e*xp; gc+=e; });
+      w-=0.15*gw*2/pts.length; c-=0.15*gc*2/pts.length;
+      pa=w*1e5/15; pb=c*1e5-pa*50; ep++; steps++; hist.push(mae(pa,pb)); drawReg();
+      if(steps>=60) stopTrain();
+    }, reduce?10:70);
+  };
+  $('resetReg').onclick=function(){ stopTrain(); pa=A0; pb=B0; ep=0; hist=[]; drawReg(); };
+  drawReg();
+
+  /* ---------- overfitting ---------- */
+  var ro=rng(6), trp=[], tep=[];
+  function fT(x){return 0.8*Math.sin(2.4*x)+0.3*x}
+  for(var i=0;i<12;i++){ var x=-1+2*(i+0.5)/12+(ro()-0.5)*0.1; trp.push([x,fT(x)+gauss(ro)*0.2]); }
+  for(var i=0;i<30;i++){ var x=-0.98+1.96*i/29; tep.push([x,fT(x)+gauss(ro)*0.2]); }
+  function polyfit(P,d){
+    var n=d+1,M=[],b=[];for(var i=0;i<n;i++){M.push(new Array(n).fill(0));b.push(0)}
+    P.forEach(function(p){ var pw=[];for(var k=0;k<n;k++)pw.push(Math.pow(p[0],k)); for(var i=0;i<n;i++){b[i]+=pw[i]*p[1];for(var j=0;j<n;j++)M[i][j]+=pw[i]*pw[j]} });
+    for(var i=0;i<n;i++)M[i][i]+=1e-9;
+    for(var c=0;c<n;c++){ var m=c;for(var k=c+1;k<n;k++)if(Math.abs(M[k][c])>Math.abs(M[m][c]))m=k; var t=M[c];M[c]=M[m];M[m]=t;t=b[c];b[c]=b[m];b[m]=t;
+      for(var k=c+1;k<n;k++){var q=M[k][c]/M[c][c];for(var j=c;j<n;j++)M[k][j]-=q*M[c][j];b[k]-=q*b[c]} }
+    var w=new Array(n).fill(0);for(var i=n-1;i>=0;i--){var s=b[i];for(var j=i+1;j<n;j++)s-=M[i][j]*w[j];w[i]=s/M[i][i]} return w;
+  }
+  function pev(w,x){var s=0;for(var k=w.length-1;k>=0;k--)s=s*x+w[k];return s}
+  function rmse(w,P){return Math.sqrt(P.reduce(function(a,q){var e=pev(w,q[0])-q[1];return a+e*e},0)/P.length)}
+  var ox0=40,ox1=620,oy0=16,oy1=264;
+  function ox(x){return ox0+(x+1.05)/2.1*(ox1-ox0)}
+  function oy(y){return oy1-(y+1.6)/3.2*(oy1-oy0)}
+  function drawOF(){
+    var d=+$('deg').value, w=polyfit(trp,d), s='';
+    s+='<line x1="'+ox0+'" x2="'+ox1+'" y1="'+oy(0)+'" y2="'+oy(0)+'" stroke="var(--line)"/>';
+    s+='<defs><clipPath id="oc"><rect x="'+ox0+'" y="'+oy0+'" width="'+(ox1-ox0)+'" height="'+(oy1-oy0)+'"/></clipPath></defs>';
+    var path=''; for(var i=0;i<=300;i++){ var x=-1.05+2.1*i/300, y=Math.max(-5,Math.min(5,pev(w,x))); path+=(i?'L':'M')+ox(x).toFixed(1)+' '+oy(y).toFixed(1); }
+    s+='<g clip-path="url(#oc)"><path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/></g>';
+    tep.forEach(function(p){ s+='<circle cx="'+ox(p[0])+'" cy="'+oy(p[1])+'" r="4" fill="none" stroke="var(--warm)" stroke-width="1.6"/>'; });
+    trp.forEach(function(p){ s+='<circle cx="'+ox(p[0])+'" cy="'+oy(p[1])+'" r="4.5" fill="var(--ink)"/>'; });
+    $('ofSvg').innerHTML=s;
+    var a=rmse(w,trp), b=rmse(w,tep);
+    $('degV').textContent='nivel '+d+' din 11';
+    $('ofTr').textContent=a.toFixed(2); $('ofTe').textContent=b.toFixed(2);
+    $('ofVerdict').innerHTML = d<=2 ? '<b>Subînvățare.</b> Modelul e prea rigid ca să urmărească forma datelor. Greșește peste tot.'
+      : d<=6 ? '<b>Potrivit.</b> Prinde tiparul general și se descurcă și pe datele noi, de test.'
+      : d<=8 ? '<b>Începe să memoreze.</b> Eroarea la antrenare scade, dar cea de test nu mai scade odată cu ea.'
+      : '<b>Supraînvățare.</b> Trece aproape prin fiecare punct negru, dar face zigzaguri absurde între ele. Eroarea la test crește puternic: a învățat pe de rost.';
+  }
+  $('deg').oninput=drawOF; drawOF();
+
+  /* ---------- neural net ---------- */
+  var inNames=[["Link suspect","Link care nu corespunde expeditorului"],["Ton de urgență","„Contul tău va fi blocat azi!”"],["Cere date","Parole, cod de card, CNP"],["Expeditor cunoscut","L-ai mai primit de la el"]];
+  var inV=[0.8,0.7,0.3,0.1];
+  var hidden=[{w:[2.2,0.3,0.8,-1.6],b:-1.0},{w:[0.2,2.0,1.4,-0.4],b:-1.2},{w:[-1.0,-0.3,-0.6,2.4],b:-0.4}];
+  var out={w:[2.0,1.8,-2.2],b:-1.4};
+  var cut={}, sel={t:'o'}, bio=false;
+  var IX=110,HX=330,OX=545, iy=[60,130,200,270], hy=[90,165,240], oyN=165;
+  var inBox=$('nnInputs');
+  inNames.forEach(function(n,i){
+    var d=document.createElement('div'); d.className='ctl';
+    d.innerHTML='<div class="row"><label for="in'+i+'">'+n[0]+'</label><span class="v" id="in'+i+'v"></span></div><input type="range" id="in'+i+'" min="0" max="100" value="'+Math.round(inV[i]*100)+'">';
+    inBox.appendChild(d);
+    d.querySelector('input').oninput=function(){ inV[i]=this.value/100; drawNN(); };
+  });
+  function forward(){
+    var h=hidden.map(function(n,j){ var z=n.b; n.w.forEach(function(w,i){ if(!cut['i'+i+'h'+j]) z+=w*inV[i]; }); return {z:z,a:sig(z)}; });
+    var z=out.b; out.w.forEach(function(w,j){ if(!cut['h'+j+'o']) z+=w*h[j].a; });
+    return {h:h,o:{z:z,a:sig(z)}};
+  }
+  function edge(x1,y1,x2,y2,w,act,id){
+    var isCut=cut[id], col=w>=0?'var(--accent)':'var(--warm)', wd=(1+Math.abs(w)*1.6).toFixed(1);
+    var s='';
+    if(isCut){ s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 5" stroke-opacity=".6"/>';
+      var mx=(x1+x2)/2,my=(y1+y2)/2; s+='<text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" font-size="13" fill="var(--bad)">✕</text>'; }
+    else {
+      s+='<line class="edge" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+col+'" stroke-width="'+wd+'" stroke-opacity="'+(0.15+0.55*act).toFixed(2)+'" stroke-linecap="round"/>';
+      if(act>0.15&&!reduce) s+='<line class="pulse" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="var(--surface)" stroke-width="'+(Math.max(1,wd-1))+'" stroke-opacity="'+(0.85*act).toFixed(2)+'" stroke-linecap="round"/>';
+    }
+    s+='<line class="hit" data-e="'+id+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"><title>Taie sau reface legătura</title></line>';
+    return s;
+  }
+  function nodeSvg(x,y,r,a,id,label){
+    var on = sel.t===id;
+    return '<g class="node" data-n="'+id+'" tabindex="0" role="button" aria-label="'+esc(label)+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="var(--surface)" stroke="'+(on?'var(--ink)':'var(--muted)')+'" stroke-width="'+(on?2.5:1.5)+'"/><circle cx="'+x+'" cy="'+y+'" r="'+(r-4)+'" fill="var(--accent)" fill-opacity="'+(a*0.85).toFixed(2)+'"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="11" font-family="var(--f-mono)" fill="var(--ink)">'+Math.round(a*100)+'%</text></g>';
+  }
+  function drawNN(){
+    var f=forward(), s='';
+    var hdr = bio ? ['dendrite (semnale)','neuroni + sinapse','axon (răspuns)'] : ['intrări','strat ascuns','ieșire'];
+    [IX,HX,OX].forEach(function(x,i){ s+='<text x="'+x+'" y="20" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--muted)" letter-spacing="1">'+hdr[i].toUpperCase()+'</text>'; });
+    hidden.forEach(function(n,j){ n.w.forEach(function(w,i){ s+=edge(IX+20,iy[i],HX-24,hy[j],w,inV[i],'i'+i+'h'+j); }); });
+    out.w.forEach(function(w,j){ s+=edge(HX+24,hy[j],OX-28,oyN,w,f.h[j].a,'h'+j+'o'); });
+    inV.forEach(function(v,i){ s+=nodeSvg(IX,iy[i],20,v,'i'+i,inNames[i][0]); s+='<text x="'+(IX-28)+'" y="'+(iy[i]+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+esc(inNames[i][0])+'</text>'; });
+    f.h.forEach(function(h,j){ s+=nodeSvg(HX,hy[j],24,h.a,'h'+j,'Neuronul ascuns '+(j+1)); });
+    s+=nodeSvg(OX,oyN,28,f.o.a,'o','Ieșirea');
+    s+='<text x="'+OX+'" y="'+(oyN+48)+'" text-anchor="middle" font-size="12" fill="var(--ink)">'+(f.o.a>0.5?'probabil phishing':'pare legitim')+'</text>';
+    s+='<g font-family="var(--f-mono)" font-size="10" fill="var(--muted)"><line x1="380" y1="314" x2="404" y2="314" stroke="var(--accent)" stroke-width="3"/><text x="410" y="318">'+(bio?'sinapsă excitatoare':'pondere pozitivă')+'</text><line x1="380" y1="300" x2="404" y2="300" stroke="var(--warm)" stroke-width="3"/><text x="410" y="304">'+(bio?'sinapsă inhibitoare':'pondere negativă')+'</text></g>';
+    $('nnSvg').innerHTML=s;
+    inV.forEach(function(v,i){ $('in'+i+'v').textContent=Math.round(v*100)+'%'; });
+    info(f);
+  }
+  function info(f){
+    var t=sel.t, html='';
+    if(t[0]==='i'){ var i=+t[1]; html='<b>'+inNames[i][0]+'</b>: '+inNames[i][1]+'.<span class="f">'+(bio?'Ca un stimul primit de dendrite. ':'')+'Valoare: '+inV[i].toFixed(2)+'</span>'; }
+    else if(t[0]==='h'){ var j=+t[1], n=hidden[j], parts=[]; n.w.forEach(function(w,i){ if(!cut['i'+i+'h'+j]) parts.push(inV[i].toFixed(2)+'×'+w.toFixed(1)); });
+      html='<b>Neuronul ascuns '+(j+1)+'</b> adună intrările înmulțite cu ponderile, apoi trece suma prin activare.<span class="f">'+parts.join(' + ')+' '+(n.b<0?'− ':'+ ')+Math.abs(n.b).toFixed(1)+' = '+f.h[j].z.toFixed(2)+' → activare '+Math.round(f.h[j].a*100)+'%</span>'; }
+    else { var parts=[]; out.w.forEach(function(w,j){ if(!cut['h'+j+'o']) parts.push(f.h[j].a.toFixed(2)+'×'+w.toFixed(1)); });
+      html='<b>Ieșirea</b> combină cei trei neuroni ascunși.'+(bio?' Ca un neuron care se declanșează doar dacă primește destul semnal.':'')+'<span class="f">'+parts.join(' + ')+' − '+Math.abs(out.b).toFixed(1)+' = '+f.o.z.toFixed(2)+' → '+Math.round(f.o.a*100)+'% phishing</span>'; }
+    var nc=Object.keys(cut).filter(function(k){return cut[k]}).length;
+    if(nc) html+='<span class="f">Legături tăiate: '+nc+'. Rețeaua încă funcționează parțial, la fel cum creierul compensează unele leziuni.</span>';
+    $('nnInfo').innerHTML=html;
+  }
+  $('nnSvg').addEventListener('click',function(e){
+    var h=e.target.closest('[data-e]'); if(h){ var id=h.getAttribute('data-e'); cut[id]=!cut[id]; drawNN(); return; }
+    var n=e.target.closest('[data-n]'); if(n){ sel.t=n.getAttribute('data-n'); drawNN(); }
+  });
+  $('nnSvg').addEventListener('keydown',function(e){ var n=e.target.closest('[data-n]'); if(n&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); sel.t=n.getAttribute('data-n'); drawNN(); } });
+  function setTerm(b){ bio=b; $('termA').setAttribute('aria-pressed',!b); $('termB').setAttribute('aria-pressed',b); drawNN(); }
+  $('termA').onclick=function(){setTerm(false)}; $('termB').onclick=function(){setTerm(true)};
+  drawNN();
+
+  /* ---------- vision: edges ---------- */
+  var cv=$('cv'), cx=cv.getContext('2d'), N=240, gray=null, mode='orig', orig=null;
+  (function drawWatch(){
+    var g=cx.createLinearGradient(0,0,N,N); g.addColorStop(0,'#d9dee4'); g.addColorStop(1,'#aeb6c0');
+    cx.fillStyle=g; cx.fillRect(0,0,N,N);
+    cx.fillStyle='#4b3a2c'; cx.fillRect(96,0,48,N);
+    cx.strokeStyle='#3a2c20'; cx.lineWidth=2; for(var y=12;y<N;y+=26){ if(y>50&&y<190)continue; cx.beginPath(); cx.moveTo(100,y); cx.lineTo(140,y); cx.stroke(); }
+    cx.fillStyle='#8a8f96'; cx.beginPath(); cx.arc(120,120,70,0,Math.PI*2); cx.fill();
+    cx.fillStyle='#c9cdd2'; cx.fillRect(188,110,12,20);
+    cx.fillStyle='#f4f2ec'; cx.beginPath(); cx.arc(120,120,58,0,Math.PI*2); cx.fill();
+    cx.strokeStyle='#222'; for(var k=0;k<12;k++){ var a=k*Math.PI/6, r1=k%3===0?42:48; cx.lineWidth=k%3===0?4:2; cx.beginPath(); cx.moveTo(120+Math.sin(a)*r1,120-Math.cos(a)*r1); cx.lineTo(120+Math.sin(a)*54,120-Math.cos(a)*54); cx.stroke(); }
+    function hand(a,l,w){ cx.lineWidth=w; cx.lineCap='round'; cx.beginPath(); cx.moveTo(120,120); cx.lineTo(120+Math.sin(a)*l,120-Math.cos(a)*l); cx.stroke(); }
+    cx.strokeStyle='#1d1d1d'; hand(-Math.PI/3,30,5); hand(Math.PI/3,44,3.5);
+    cx.strokeStyle='#b0463a'; hand(Math.PI*0.85,48,1.5);
+    cx.fillStyle='#1d1d1d'; cx.beginPath(); cx.arc(120,120,4,0,Math.PI*2); cx.fill();
+    orig=cx.getImageData(0,0,N,N); gray=new Float32Array(N*N);
+    for(var i=0;i<N*N;i++) gray[i]=0.299*orig.data[i*4]+0.587*orig.data[i*4+1]+0.114*orig.data[i*4+2];
+  })();
+  function render(){
+    if(mode==='orig'){ cx.putImageData(orig,0,0); return; }
+    var out=cx.createImageData(N,N);
+    for(var y=1;y<N-1;y++)for(var x=1;x<N-1;x++){
+      function p(dx,dy){return gray[(y+dy)*N+x+dx]}
+      var gx=-p(-1,-1)-2*p(-1,0)-p(-1,1)+p(1,-1)+2*p(1,0)+p(1,1);
+      var gy=-p(-1,-1)-2*p(0,-1)-p(1,-1)+p(-1,1)+2*p(0,1)+p(1,1);
+      var v=mode==='v'?Math.abs(gx):mode==='h'?Math.abs(gy):Math.sqrt(gx*gx+gy*gy);
+      v=Math.min(255,v*0.9); var o=(y*N+x)*4;
+      out.data[o]=v*0.75+12; out.data[o+1]=v*0.85+14; out.data[o+2]=v+18; out.data[o+3]=255;
+    }
+    cx.putImageData(out,0,0);
+  }
+  var KV=[-1,0,1,-2,0,2,-1,0,1], KH=[-1,-2,-1,0,0,0,1,2,1], last=[176,120];
+  function showPix(px,py){
+    px=Math.max(1,Math.min(N-2,px)); py=Math.max(1,Math.min(N-2,py)); last=[px,py];
+    var vals=[]; for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++) vals.push(Math.round(gray[(py+dy)*N+px+dx]));
+    var h='<div class="m3">'+vals.map(function(v){return '<span style="background:rgb('+v+','+v+','+v+');color:'+(v>140?'#222':'#eee')+'">'+v+'</span>'}).join('')+'</div>';
+    var note;
+    if(mode==='orig'){ h+='<span class="op">→</span><span class="res">?</span>'; note='Așa vede calculatorul imaginea: numere de la 0 (negru) la 255 (alb). Alege un filtru ca să vezi calculul.'; }
+    else {
+      var K=mode==='h'?KH:KV, sv=0,sh=0; vals.forEach(function(v,i){ sv+=v*KV[i]; sh+=v*KH[i]; });
+      var res = mode==='v'?Math.abs(sv):mode==='h'?Math.abs(sh):Math.round(Math.sqrt(sv*sv+sh*sh));
+      h+='<span class="op">×</span><div class="m3 k">'+K.map(function(k){return '<span>'+k+'</span>'}).join('')+'</div><span class="op">=</span><span class="res">'+res+'</span>';
+      var kind = mode==='v'?'verticală':mode==='h'?'orizontală':'';
+      note = res>200 ? 'Rezultat mare: aici este o margine'+(kind?' '+kind:'')+'. În imaginea filtrată, punctul apare luminos.' : res>60 ? 'Rezultat moderat: o tranziție mai slabă sau oblică.' : 'Rezultat aproape zero: zonă uniformă, fără margine. Punctul rămâne întunecat.';
+      if(mode==='all') note+=' Aici se combină ambele filtre.';
+    }
+    $('conv').innerHTML=h; $('convNote').textContent=note;
+  }
+  document.querySelectorAll('#cvBtns .btn').forEach(function(b){ b.onclick=function(){ document.querySelectorAll('#cvBtns .btn').forEach(function(o){o.setAttribute('aria-pressed','false')}); b.setAttribute('aria-pressed','true'); mode=b.dataset.m; render(); showPix(last[0],last[1]); }; });
+  cv.addEventListener('pointermove',function(e){ var r=cv.getBoundingClientRect(); showPix(Math.round((e.clientX-r.left)/r.width*N),Math.round((e.clientY-r.top)/r.height*N)); });
+  showPix(176,120);
+
+  /* ---------- parallax ---------- */
+  function watchSvg(){ return '<rect x="118" y="0" width="44" height="200" rx="6" fill="#6b5442"/>'; }
+  function face(){
+    var t=''; for(var k=0;k<12;k++){ var a=k*Math.PI/6; t+='<line x1="'+(140+Math.sin(a)*34)+'" y1="'+(100-Math.cos(a)*34)+'" x2="'+(140+Math.sin(a)*40)+'" y2="'+(100-Math.cos(a)*40)+'" stroke="#2a2a2a" stroke-width="'+(k%3?1.5:3)+'"/>'; }
+    return t;
+  }
+  function hands(){ return '<line x1="140" y1="100" x2="'+(140-Math.sin(Math.PI/3)*22)+'" y2="'+(100-Math.cos(Math.PI/3)*22)+'" stroke="#1d1d1d" stroke-width="4" stroke-linecap="round"/><line x1="140" y1="100" x2="'+(140+Math.sin(Math.PI/3)*32)+'" y2="'+(100-Math.cos(Math.PI/3)*32)+'" stroke="#1d1d1d" stroke-width="3" stroke-linecap="round"/><circle cx="140" cy="100" r="3" fill="#1d1d1d"/>'; }
+  function drawPx(){
+    var v=$('pxR').value/100;
+    $('pxV').textContent=(v<0?'stânga ':v>0?'dreapta ':'centru ')+(v?Math.abs(Math.round(v*100))+'%':'');
+    var real='<rect width="280" height="200" fill="var(--bg)"/>'+
+      '<g transform="translate('+(v*4)+',0)">'+watchSvg()+'</g>'+
+      '<g transform="translate('+(v*12)+',0)"><circle cx="140" cy="100" r="54" fill="#8d9299"/></g>'+
+      '<g transform="translate('+(v*15)+',0)"><circle cx="140" cy="100" r="44" fill="#f4f2ec"/>'+face()+'</g>'+
+      '<g transform="translate('+(v*20)+',0)">'+hands()+'</g>'+
+      '<g transform="translate('+(-v*26)+','+(Math.abs(v)*4)+')"><ellipse cx="124" cy="80" rx="22" ry="9" fill="#ffffff" fill-opacity="'+(0.25+0.35*Math.abs(v))+'" transform="rotate(-25 124 80)"/></g>';
+    $('pxReal').innerHTML=real;
+    var photo='<rect width="280" height="200" fill="var(--bg)"/><g transform="translate('+(v*12)+',0)"><rect x="54" y="8" width="172" height="184" rx="4" fill="#e7e3da" stroke="var(--line)"/>'+
+      '<rect x="120" y="8" width="40" height="184" fill="#6b5442"/><circle cx="140" cy="100" r="50" fill="#8d9299"/><circle cx="140" cy="100" r="41" fill="#f4f2ec"/>'+face().replace(/34\)/g,'34)')+hands()+
+      '<ellipse cx="128" cy="82" rx="18" ry="7" fill="#fff" fill-opacity=".3" transform="rotate(-25 128 82)"/></g>';
+    $('pxPhoto').innerHTML=photo;
+  }
+  $('pxR').oninput=drawPx; drawPx();
+
+  /* ---------- embedding ---------- */
+  var er=rng(11), people=[
+    {n:'Tu',c:[190,150],sd:16,col:'var(--accent)',k:10},
+    {n:'Geamănul tău',c:[245,178],sd:15,col:'var(--warm)',k:8},
+    {n:'Persoana B',c:[440,85],sd:18,col:'var(--muted)',k:8},
+    {n:'Persoana C',c:[470,240],sd:18,col:'var(--muted)',k:8},
+    {n:'Persoana D',c:[90,260],sd:16,col:'var(--muted)',k:8}
+  ];
+  people.forEach(function(p){ p.pts=[]; for(var i=0;i<p.k;i++) p.pts.push([p.c[0]+gauss(er)*p.sd,p.c[1]+gauss(er)*p.sd]); });
+  var me=people[0].pts.slice(0,3).reduce(function(a,p){return [a[0]+p[0]/3,a[1]+p[1]/3]},[0,0]);
+  function drawEmb(){
+    var r=+$('thr').value, s='', ok=0, bad=0, tw=0;
+    s+='<circle cx="'+me[0]+'" cy="'+me[1]+'" r="'+r+'" fill="var(--accent-soft)" fill-opacity=".7" stroke="var(--accent)" stroke-dasharray="5 5"/>';
+    people.forEach(function(p,pi){
+      p.pts.forEach(function(q){ var inside=Math.hypot(q[0]-me[0],q[1]-me[1])<=r; if(pi===0&&inside)ok++; if(pi>0&&inside){bad++; if(pi===1)tw++;}
+        s+= pi===0 ? '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="5" fill="var(--accent)"/>' : '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4.5" fill="var(--surface)" stroke="'+p.col+'" stroke-width="1.8"/>'; });
+      s+='<text x="'+p.c[0]+'" y="'+(p.c[1]-p.sd*2.4)+'" text-anchor="middle" font-size="11" font-family="var(--f-mono)" fill="var(--muted)">'+p.n+'</text>';
+    });
+    s+='<path d="M'+(me[0]-6)+' '+me[1]+' h12 M'+me[0]+' '+(me[1]-6)+' v12" stroke="var(--ink)" stroke-width="2"/>';
+    $('embSvg').innerHTML=s;
+    $('thrV').textContent=r; $('embOk').textContent=ok+' din '+people[0].k; $('embBad').textContent=bad;
+    $('embVerdict').innerHTML = bad===0&&ok<people[0].k ? '<b>Prag strict.</b> Nimeni altcineva nu intră, dar uneori nici tu: telefonul îți cere codul în lumină slabă sau cu ochelari noi.'
+      : bad===0 ? '<b>Echilibru bun.</b> Ești recunoscut aproape mereu, iar străinii rămân afară.'
+      : tw===bad ? '<b>Atenție la gemeni.</b> Primul care trece de prag e geamănul tău: amprentele voastre sunt foarte apropiate. Exact din acest motiv Apple recomandă un cod pentru gemeni.'
+      : '<b>Prag prea permisiv.</b> Și alte persoane îți pot debloca telefonul. Orice sistem real alege un compromis între cele două tipuri de erori.';
+  }
+  $('thr').oninput=drawEmb; drawEmb();
+
+  /* ---------- tokens ---------- */
+  var tin=$('tokIn');
+  function tokenize(s){
+    var parts=s.match(/\s*[\p{L}\p{N}]+|\s*[^\s\p{L}\p{N}]|\s+$/gu)||[], out=[];
+    parts.forEach(function(p){ var lead=p.match(/^\s*/)[0], core=p.slice(lead.length);
+      if(core.length<=6){out.push(p);return} var first=true;
+      while(core.length){ var n=core.length>7?4:core.length; out.push((first?lead:'')+core.slice(0,n)); core=core.slice(n); first=false; } });
+    return out;
+  }
+  function updTok(){ var t=tokenize(tin.value), o=$('tokOut'); o.innerHTML='';
+    t.forEach(function(x,i){ var s=document.createElement('span'); s.className='tok t'+(i%3); s.textContent=x; o.appendChild(s); });
+    $('tokCount').textContent=t.length+' tokeni din '+tin.value.length+' caractere. Cuvintele lungi sau rare se taie în mai multe bucăți, iar limbile cu diacritice folosesc de obicei mai mulți tokeni decât engleza.'; }
+  tin.addEventListener('input',updTok); updTok();
+
+  /* ---------- attention ---------- */
+  var att={
+    a:{w:[["M-am",.15],["așezat",.8],["pe",.3],["bancă",-1],["în",.1],["parc,",.9],["la",.1],["umbră.",.45]],n:'Cuvintele „așezat” și „parc” cântăresc cel mai mult, deci modelul înțelege „bancă” ca loc pe care stai.'},
+    b:{w:[["Am",.1],["depus",.9],["salariul",.85],["la",.15],["bancă",-1],["și",.05],["am",.05],["plătit",.4],["chiria.",.45]],n:'Acum contează „depus” și „salariul”, deci „bancă” înseamnă instituție financiară. Același cuvânt, alt sens, stabilit din context.'}
+  };
+  function drawAtt(k){ var d=att[k], h='';
+    d.w.forEach(function(x){ if(x[1]<0) h+='<span class="q">'+x[0]+'</span>'; else h+='<span style="background:color-mix(in srgb, var(--accent) '+Math.round(x[1]*55)+'%, transparent)">'+x[0]+'</span>'; });
+    $('att').innerHTML=h; $('attNote').textContent=d.n;
+    $('attA').setAttribute('aria-pressed',k==='a'); $('attB').setAttribute('aria-pressed',k==='b'); }
+  $('attA').onclick=function(){drawAtt('a')}; $('attB').onclick=function(){drawAtt('b')}; drawAtt('a');
+
+  /* ---------- temperature ---------- */
+  var temps=[['scăzută (0,2)','Marea era liniștită în dimineața aceea, iar valurile se loveau încet de țărm.'],['medie (0,8)','Bunicul spunea că marea ține minte fiecare corabie pierdută și că, în nopțile cu ceață, le strigă pe nume.'],['ridicată (1,5)','Marea a învățat să fluiere într-o marți, chiar când farul își pierduse ochelarii și pescărușii negociau chiria.']];
+  function updT(){ var t=temps[+$('tempR').value]; $('tempV').textContent=t[0]; $('tempOut').textContent='„'+t[1]+'”'; }
+  $('tempR').oninput=updT; updT();
+
+  /* ---------- myths ---------- */
+  var myths=[
+    ['Face ID poate fi păcălit cu o poză de pe Instagram.','f','Fals','Telefonul măsoară adâncimea cu puncte infraroșii. O poză e plată și nu arată ca pielea în infraroșu.'],
+    ['Un model cu 100% acuratețe pe datele de antrenare e un model excelent.','f','Fals','Cel mai probabil a memorat. Contează doar performanța pe date pe care nu le-a văzut.'],
+    ['Mai multe date înseamnă mereu un model mai bun.','m','Nu neapărat','Contează și calitatea. Date multe, dar părtinitoare, produc un model părtinitor, cum a arătat studiul Gender Shades.'],
+    ['Rețelele neuronale funcționează exact ca creierul.','f','Fals','Sunt inspirate de neuroni, dar învață altfel, nu trimit impulsuri în timp și consumă enorm de multă energie în comparație cu creierul.'],
+    ['Nici creatorii nu știu mereu de ce un model a dat un anumit răspuns.','t','Adevărat','Comportamentul vine din miliarde de ponderi învățate. Interpretabilitatea e un domeniu de cercetare activ tocmai din acest motiv.'],
+    ['ChatGPT caută răspunsul pe internet de fiecare dată.','f','Fals','De obicei scrie din ce a învățat. Caută doar dacă are o unealtă de căutare și o folosește.'],
+    ['În UE, o universitate nu are voie să-ți analizeze emoțiile cu AI în timpul unui examen.','t','Adevărat','AI Act interzice recunoașterea emoțiilor în educație și la locul de muncă din februarie 2025, cu excepții medicale și de siguranță.'],
+    ['Telefonul trimite fața ta pe serverele Apple ca să te recunoască.','f','Fals','Amprenta facială rămâne criptată pe telefon și nu e inclusă în backup.']
+  ];
+  var mb=$('myths');
+  myths.forEach(function(m){
+    var b=document.createElement('button'); b.type='button'; b.className='myth'; b.setAttribute('aria-expanded','false');
+    b.innerHTML='<span class="c">'+m[0]+'</span><span class="h">Apasă pentru răspuns</span><span class="a" hidden><span class="verd '+m[1]+'">'+m[2]+'</span><p>'+m[3]+'</p></span>';
+    b.onclick=function(){ var a=b.querySelector('.a'),h=b.querySelector('.h'),open=a.hidden; a.hidden=!open; h.hidden=open; b.setAttribute('aria-expanded',open); };
+    mb.appendChild(b);
+  });
+
+  /* ---------- misinformation: tells + checklist ---------- */
+  var vid=$('fakeVid');
+  var tells=[
+    [0.5,'Contul nu e al lui Ronaldo','Clipul e postat de un cont oarecare. Contul oficial al unui fotbalist nu ar avea alt nume și watermark-ul altcuiva.'],
+    [4.8,'Lumina trece prin ecran','Bara de lumină din tavan apare în fața ecranelor cu meniu, ceea ce fizic e imposibil. Modelele video încurcă des ce e în față și ce e în spate.'],
+    [7.6,'Logo și meniu deformate','Literele din logo sunt strâmbe, iar produsele din meniu sunt pete de mâncare fără text lizibil. AI-ul generează bine texturi, prost text.'],
+    [8,'Un sosie al lui Messi la tejghea','Un bărbat care seamănă cu Lionel Messi, în uniformă de angajat. Scenariul absurd e tipic pentru un val de clipuri AI cu vedete în fast-food.'],
+    [9,'Două watermark-uri TikTok','Al doilea watermark arată că clipul a fost descărcat și repostat. Falsurile circulă de obicei așa, fără sursa originală.'],
+    [0,'Afirmația e doar în text','Mesajul politic stă în subtitrarea adăugată peste video. Nicio publicație credibilă nu a relatat o asemenea susținere.']
+  ];
+  var tb=$('tells');
+  tells.forEach(function(t){
+    var b=document.createElement('button'); b.type='button'; b.className='tell'; b.setAttribute('aria-pressed','false');
+    var mm='0:'+(t[0]<10?'0':'')+Math.floor(t[0]);
+    b.innerHTML='<span class="ts">'+mm+'</span><span><b>'+esc(t[1])+'</b><span class="d" hidden>'+esc(t[2])+'</span></span>';
+    b.onclick=function(){
+      var d=b.querySelector('.d'), open=d.hidden; d.hidden=!open; b.setAttribute('aria-pressed',open);
+      if(open){ try{ vid.currentTime=t[0]; vid.pause(); }catch(e){} }
+    };
+    tb.appendChild(b);
+  });
+  var checks=[
+    'Am verificat cine a postat clipul',
+    'Am căutat știrea pe site-uri de presă cunoscute',
+    'M-am uitat atent la fundal, text, mâini și lumină',
+    'Am căutat originalul (căutare inversă după imagine)',
+    'Am verificat pe un site de fact-checking'
+  ];
+  var cb=$('check');
+  checks.forEach(function(c,i){
+    var l=document.createElement('label');
+    l.innerHTML='<input type="checkbox" id="chk'+i+'"><span>'+esc(c)+'</span>';
+    l.querySelector('input').onchange=updCheck; cb.appendChild(l);
+  });
+  function updCheck(){
+    var n=cb.querySelectorAll('input:checked').length;
+    $('meterFill').style.width=(n/checks.length*100)+'%';
+    $('checkNote').textContent = n===0 ? 'Fiecare bifă e un minut de verificare. Majoritatea falsurilor cad deja la primele două.'
+      : n<3 ? 'Bun început. Pentru clipul de mai sus, primele două verificări sunt suficiente ca să-l demaște.'
+      : n<5 ? 'Aproape. Dacă un clip trece de toate aceste verificări, abia atunci merită luat în serios.'
+      : 'Complet. Acum poți decide informat: dai share sau, mai bine, raportezi falsul.';
+  }
+  updCheck();
+
+  /* ---------- progress + reveal ---------- */
+  function onScroll(){ var h=document.documentElement.scrollHeight-innerHeight; $('bar').style.width=(h>0?scrollY/h*100:0)+'%'; }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  if(!reduce && 'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.remove('wait'); io.unobserve(e.target); } }); },{rootMargin:'0px 0px -6% 0px',threshold:0.04});
+    document.querySelectorAll('.reveal').forEach(function(el){ if(el.getBoundingClientRect().top>innerHeight){ el.classList.add('wait'); io.observe(el); } });
+  }
+})();
+</script>
+</body>
+</html>
